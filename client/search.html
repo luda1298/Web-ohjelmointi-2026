@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Haku</title>
+
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- jQuery-kirjaston lataus -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script>
+      $(document).ready(function () {
+        // Kun käyttäjä painaa "Hae puhelinnumero" -painiketta
+        $('[name="submit"]').click(function () {
+          const name = $("#nimi").val().trim();
+          $("#puhelin").val("");
+
+          // Tarkistetaan, että käyttäjä syötti nimen
+          if (!name) {
+            alert("Syötä nimi.");
+            return;
+          }
+
+          // Haetaan palvelimelta yhden henkilön tiedot nimen perusteella
+          // encodeURIComponent varmistaa, että erikoismerkit toimivat URL:ssa
+          $.getJSON(
+            "http://localhost:3000/data/" + encodeURIComponent(name),
+            function (person) {
+              if (!person) {
+                alert("Nimeä ei löytynyt.");
+                return;
+              }
+              $("#puhelin").val(person.puhelin || "");
+            },
+          ).fail(function () {
+            // Virhetilanne (esim. serveri ei käynnissä tai väärä osoite)
+            alert("Virhe haussa. Onko serveri käynnissä?");
+          });
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Haku (nimen perusteella)</h1>
+
+      <nav>
+        <a href="./index.html">Takaisin pääsivulle</a>
+        <a href="./list.html">Koko luettelo</a>
+      </nav>
+
+      <!-- Lomake (form): käyttäjä syöttää nimen ja saa puhelinnumeron -->
+      <form id="form" name="form">
+        <p>
+          <b>Syötä nimi:</b><br />
+          <input name="nimi" id="nimi" type="text" maxlength="35" size="35" />
+        </p>
+
+        <p>
+          <b>Puhelin:</b><br />
+          <input
+            name="puhelin"
+            id="puhelin"
+            type="text"
+            maxlength="35"
+            size="35"
+          />
+        </p>
+
+        <p>
+          <input name="submit" type="button" value="Hae puhelinnumero" />
+        </p>
+      </form>
+    </div>
+  </body>
+</html>

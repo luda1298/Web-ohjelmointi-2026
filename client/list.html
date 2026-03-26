@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Koko puhelinluettelo</title>
+
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- jQuery-kirjaston lataus -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Koko puhelinluettelo</h1>
+
+      <nav>
+        <a href="./index.html">Takaisin pääsivulle</a>
+        <a href="./search.html">Haku</a>
+      </nav>
+
+      <!-- Tänne näytetään mahdollinen tila- tai virheviesti -->
+      <p id="status"></p>
+      <div id="tableContainer"></div>
+    </div>
+
+    <script>
+      // Odotetaan, että koko sivu on ladattu ennen kuin suoritetaan koodi
+      $(document).ready(function () {
+        $("#status").text("Ladataan dataa...");
+
+        $.getJSON("http://localhost:3000/data", function (data) {
+          let html = `
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nimi</th>
+                <th>Puhelin</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+          // Käydään läpi jokainen henkilö data-taulukosta
+          data.forEach((p) => {
+            html += `
+            <tr>
+              <td>${p.id}</td>
+              <td>${p.nimi}</td>
+              <td>${p.puhelin}</td>
+            </tr>
+          `;
+          });
+
+          html += `</tbody></table>`;
+
+          $("#status").text("");
+
+          // Lisätään valmis taulukko sivulle
+          $("#tableContainer").html(html);
+        }).fail(function () {
+          // Näytetään virheilmoitus jos dataa ei saatu
+          $("#status").text("Virhe: dataa ei saatu (onko serveri käynnissä?)");
+        });
+      });
+    </script>
+  </body>
+</html>
